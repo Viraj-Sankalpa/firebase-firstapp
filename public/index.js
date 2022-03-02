@@ -1,6 +1,5 @@
-const app = firebase.app();
+export let app = firebase.app();
 const cred = app._delegate._options;
-console.log(cred);
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js";
 import {
@@ -62,23 +61,41 @@ if (signup_form) {
     };
 }
 
+const signout_button = document.getElementById("signout");
+signout_button.onclick = () => {
+    signOut(auth)
+        .then(() => {
+            // Sign-out successful.
+            localStorage.removeItem('user')
+            console.log("signout");
+            location.reload();
+        })
+        .catch((error) => {
+            // An error happened.
+            console.log("error:signout");
+        });
+};
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        const uid = user.uid;
-        console.log(uid);
+        document.querySelectorAll("a[title=auth_done]").forEach((node) => {
+            node.style.display = "none";
+        });
+        document.querySelectorAll("a[title=auth]").forEach((node) => {
+            node.style.display = "block";
+        });
+
+        document.getElementById("userid").innerHTML = user.email;
+        document.getElementById("profile-info-name").innerHTML = user.email;
+        // console.log(user);
+        localStorage.setItem("uid", user.uid);
     } else {
         // User is signed out
-        console.log('====================================');
-        console.log("User not found");
-        console.log('====================================');
+        document.querySelectorAll('a[title=auth]').forEach(node => {
+            node.style.display = 'none';
+        });
+        document.querySelectorAll("a[title=auth_done]").forEach((node) => {
+            node.style.display = "block";
+        });
     }
 });
-
-// ####### Sign out ############
-
-const signout_btn = document.getElementById('signout')
-
-if(signout_btn){
-    signOut(auth)
-}
